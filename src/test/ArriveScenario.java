@@ -17,13 +17,13 @@ import java.awt.Color;
 public class ArriveScenario {
     /*
         Goal of this exercise:
-        - Write a controller for "car1" that uses the "Arrive" steerig behavior to arrive to 
+        - Write a controller for "car1" that uses the "Arrive" steering behavior to arrive to
           a given marker.
         - To make sure it works, test your controller by placing the marker in different positions
           in the map.
     */
-    
-    public static void main(String args[]) throws Exception {
+
+    public static void main(String[] args) throws Exception {
         Game game = new Game(800,600, 25);
         // set up the outside walls:
         game.add(new Obstacle(0,0,800,25,Color.GRAY));

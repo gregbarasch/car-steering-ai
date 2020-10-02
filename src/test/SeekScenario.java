@@ -19,8 +19,8 @@ public class SeekScenario {
         - Write a controller for "car2" that uses the "Seek" steerig behavior to always run
           after car1 (that is controlled using the arrow keys).
     */
-    
-    public static void main(String args[]) throws Exception {
+
+    public static void main(String[] args) throws Exception {
         Game game = new Game(800,600, 25);
         // set up the outside walls:
         game.add(new Obstacle(0,0,800,25,Color.GRAY));

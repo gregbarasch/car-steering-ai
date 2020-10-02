@@ -20,8 +20,8 @@ public class WallAvoidanceSeekScenario {
           after car1 (that is controlled using the arrow keys).
         - Include "wall avoidance" in your controller to prevent it from hitting any wall
     */
-    
-    public static void main(String args[]) throws Exception {
+
+    public static void main(String[] args) throws Exception {
         Game game = new Game(800,600, 25);
         // set up the outside walls:
         game.add(new Obstacle(0,0,800,25,Color.GRAY));

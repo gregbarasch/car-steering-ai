@@ -17,6 +17,6 @@ public abstract class Controller {
     public static final int VARIABLE_STEERING = 0;
     public static final int VARIABLE_THROTTLE = 1;
     public static final int VARIABLE_BRAKE = 2;
-    
-    public abstract void update(Car subject, Game game, double delta_t, double controlVariables[]);
+
+    public abstract void update(Car subject, Game game, double delta_t, double[] controlVariables);
 }
