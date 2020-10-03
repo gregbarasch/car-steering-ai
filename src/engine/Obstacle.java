@@ -2,7 +2,6 @@ package engine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -12,7 +11,7 @@ public class Obstacle extends GameObject {
     double m_width, m_height;
     Color m_color;
     RotatedRectangle m_collision_box;
-   
+
     public Obstacle(double x, double y, double width, double height, Color c) {
         m_x = x+width/2;
         m_y = y+height/2;
@@ -29,10 +28,10 @@ public class Obstacle extends GameObject {
         g.setColor(m_color);
         g.fillRect((int)(m_x-m_width/2), (int)(m_y-m_height/2), (int)m_width, (int)m_height);
     }
-    
+
     public RotatedRectangle getCollisionBox() {
         return m_collision_box;
     }
-    
-        
+
+
 }

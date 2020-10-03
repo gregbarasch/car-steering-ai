@@ -1,7 +1,7 @@
 package test;
 
-import controllers.EmptyController;
 import controllers.KeyboardController;
+import controllers.SeekController;
 import engine.Car;
 import engine.Game;
 import engine.GameObject;
@@ -28,8 +28,9 @@ public class SeekScenario {
         game.add(new Obstacle(0,0,25,600,Color.GRAY));
         game.add(new Obstacle(775,0,25,600,Color.GRAY));
         // set up the cars and markers:
-        GameObject car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new KeyboardController());
-        GameObject car2 = new Car("graphics/bluecar.png",600,300,-Math.PI/2, new EmptyController());
+        // FIXME make it a game object
+        Car car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new KeyboardController());
+        GameObject car2 = new Car("graphics/bluecar.png",600,300,-Math.PI/2, new SeekController(car1));
         game.add(car1);
         game.add(car2);
         GameWindow.newWindow(game);

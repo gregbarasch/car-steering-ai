@@ -2,8 +2,6 @@ package controllers;
 
 import engine.Car;
 import engine.Game;
-import engine.GameObject;
-import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 
@@ -24,17 +22,15 @@ public class KeyboardController extends Controller {
     public KeyboardController() {
         for(int i = 0;i<KeyEvent.KEY_LAST;i++) keyboardState[i] = false;
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
-            new KeyEventDispatcher() {
-                public boolean dispatchKeyEvent(KeyEvent ke) {
+                dispatcher -> {
                     synchronized (KeyboardController.class) {
-                        switch (ke.getID()) {
-                            case KeyEvent.KEY_PRESSED -> keyboardState[ke.getKeyCode()] = true;
-                            case KeyEvent.KEY_RELEASED -> keyboardState[ke.getKeyCode()] = false;
+                        switch (dispatcher.getID()) {
+                            case KeyEvent.KEY_PRESSED -> keyboardState[dispatcher.getKeyCode()] = true;
+                            case KeyEvent.KEY_RELEASED -> keyboardState[dispatcher.getKeyCode()] = false;
                         }
                         return false;
                     }
-                }
-            });
+                });
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {

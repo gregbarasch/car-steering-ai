@@ -3,11 +3,7 @@ package controllers;
 import engine.Car;
 import engine.Game;
 
-/**
- *
- * @author santi
- */
-public class EmptyController extends Controller {
+public class ArriveController extends Controller {
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
         controlVariables[VARIABLE_STEERING] = 0;

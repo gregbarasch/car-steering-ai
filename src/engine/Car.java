@@ -42,7 +42,7 @@ public class Car extends GameObject {
         double[] controlVariables = {0,0,0};
         m_controller.update(this, game, delta_t, controlVariables);
 
-        // remember the old posision, in case there is a collision:
+        // remember the old position, in case there is a collision:
         double old_x = m_x;
         double old_y = m_y;
         double old_angle = m_alpha;
