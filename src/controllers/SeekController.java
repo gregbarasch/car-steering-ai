@@ -15,40 +15,46 @@ public class SeekController extends Controller {
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
 
-        double[] acceleration = seek(subject, target);
+        double[] accelerationVector = seek(subject, target);
 
         // velocity vector
         double vx = Math.cos(subject.getAngle())*subject.getSpeed()*delta_t;
         double vy = Math.sin(subject.getAngle())*subject.getSpeed()*delta_t;
         double[] velocityVector = { vx, vy };
 
-        // Steering
-        double[] rightVector = new double[]{ velocityVector[1], velocityVector[0]*-1 };
-        double rightVectorAProjection = VectorMath.dotProduct(rightVector, acceleration);
+        // Forward/Backward
+        controlVariables[VARIABLE_BRAKE] = 0;
 
-        if (rightVectorAProjection > 0) {
+
+        double[] normalizedVelocityVector = VectorMath.normalize(velocityVector);
+        double directionProjection = VectorMath.dotProduct(accelerationVector, normalizedVelocityVector);
+
+        // Acceleration + set reverse steering while moving backwards
+        boolean reverse = false;
+        if (directionProjection > 0) {
+            controlVariables[VARIABLE_THROTTLE] = 1;
+        } else if (directionProjection < 0) {
+            controlVariables[VARIABLE_THROTTLE] = -1;
+            reverse = true;
+        } else {
+            controlVariables[VARIABLE_THROTTLE] = 1;
+        }
+
+        // project right vector over acceleration vector to compute steering projection..
+        double[] rightVector = new double[]{ velocityVector[1], velocityVector[0]*-1 };
+        double steerProjection = VectorMath.dotProduct(rightVector, accelerationVector);
+
+        // TODO nonbinary steering? use the double?
+        // Steering
+        if (steerProjection > 0) {
             controlVariables[VARIABLE_STEERING] = 1;
-        } else if (rightVectorAProjection < 0) {
+        } else if (steerProjection < 0) {
             controlVariables[VARIABLE_STEERING] = -1;
         } else {
             controlVariables[VARIABLE_STEERING] = 0;
         }
-
-        // Acceleration
-        controlVariables[VARIABLE_BRAKE] = 0;
-
-        double directionProjection = VectorMath.dotProduct(acceleration, velocityVector);
-
-        double[] reverseNormalizedDirectionVector = VectorMath.multiply(velocityVector, -1);
-        double reverseProjection = VectorMath.dotProduct(acceleration, reverseNormalizedDirectionVector);
-
-        if (directionProjection > 0) {
-            controlVariables[VARIABLE_THROTTLE] = 1;
-        } else if (directionProjection < 0) {
-            controlVariables[VARIABLE_THROTTLE] = 1;
-        } else {
-            controlVariables[VARIABLE_THROTTLE] = 1;
-        }
+        // Steering is reversed when moving backwards
+        if (reverse) controlVariables[VARIABLE_STEERING] *= -1;
     }
 
     private double[] seek(Car self, GameObject target) {
