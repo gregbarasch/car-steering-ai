@@ -3,16 +3,16 @@ package util;
 import engine.GameObject;
 
 public class VectorMath {
-    public static double[] distance(GameObject a, GameObject b) {
-        double x = a.getX() - b.getX();
-        double y = a.getY() - b.getY();
+    public static double[] distance(GameObject from, GameObject to) {
+        double x = to.getX() - from.getX();
+        double y = to.getY() - from.getY();
         return new double[]{ x, y };
     }
 
-    private static double distance(double[] a, double[] b) {
+    private static double distance(double[] from, double[] to) {
         double sum = 0.0;
-        for (int i = 0; i < a.length; i++) {
-            sum += (a[i] - b[i]) * (a[i] - b[i]);
+        for (int i = 0; i < from.length; i++) {
+            sum += (to[i] - from[i]) * (to[i] - from[i]);
         }
         return Math.sqrt(sum);
     }

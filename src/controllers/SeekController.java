@@ -22,7 +22,7 @@ public class SeekController extends Controller {
         double directionProjection = VectorMath.dotProduct(accelerationVector, forwardVector);
 
         // Use direction projection to set our linear acceleration
-        if (directionProjection < 0) {
+        if (directionProjection > 0) {
             controlVariables[VARIABLE_THROTTLE] = 1;
         } else {
             controlVariables[VARIABLE_THROTTLE] = -1;
@@ -34,7 +34,7 @@ public class SeekController extends Controller {
         double steerProjection = VectorMath.dotProduct(accelerationVector, rightVector);
 
         // Steering
-        if (steerProjection < 0) {
+        if (steerProjection > 0) {
             controlVariables[VARIABLE_STEERING] = -1;
         } else {
             controlVariables[VARIABLE_STEERING] = 1;
