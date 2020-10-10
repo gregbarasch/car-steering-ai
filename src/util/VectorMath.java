@@ -15,7 +15,7 @@ public class VectorMath {
         return new double[]{ x, y };
     }
 
-    private static double distance(double[] from, double[] to) {
+    public static double euclideanDistance(double[] from, double[] to) {
         double sum = 0.0;
         for (int i = 0; i < from.length; i++) {
             sum += (to[i] - from[i]) * (to[i] - from[i]);

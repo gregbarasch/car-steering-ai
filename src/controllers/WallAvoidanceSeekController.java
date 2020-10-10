@@ -3,11 +3,13 @@ package controllers;
 import engine.Car;
 import engine.Game;
 import engine.GameObject;
-import engine.RotatedRectangle;
+import engine.RayCast;
+import engine.RayCast.RayCastResult;
 import util.VectorMath;
 
 public class WallAvoidanceSeekController extends Controller {
 
+    private static final double RAD45 = Math.PI/4;
     private final GameObject target;
 
     public WallAvoidanceSeekController(GameObject target) {
@@ -15,41 +17,9 @@ public class WallAvoidanceSeekController extends Controller {
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
-        // seek target might not be the actual target if a wall is in the way
-        double[] seekTarget = new double[]{ subject.getX(), subject.getY() };
 
-        // Raycast in direction of velocity, several time iterations forward
-        double angle = subject.getAngle();
-        double mx = Math.cos(angle) * subject.getSpeed() * delta_t * 20;
-        double my = Math.sin(angle) * subject.getSpeed() * delta_t * 20;
-        double[] checkTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
-        boolean isCollision = rayCast(game, subject, checkTarget);
-
-        if (isCollision) {
-            // Project 45 degrees (converted to radians) in either direction
-            double rad45 = Math.PI/4;
-            angle = subject.getAngle() + rad45;
-            mx = Math.cos(angle) * subject.getSpeed() * delta_t * 20;
-            my = Math.sin(angle) * subject.getSpeed() * delta_t * 20;
-            checkTarget[0] = subject.getX()+mx;
-            checkTarget[1] = subject.getY()+my;
-            isCollision = rayCast(game, subject, checkTarget);
-
-            // Project 45 degrees in the other direction
-            if (isCollision) {
-                angle = subject.getAngle() - rad45;
-                mx = Math.cos(angle) * subject.getSpeed() * delta_t * 20;
-                my = Math.sin(angle) * subject.getSpeed() * delta_t * 20;
-                checkTarget[0] = subject.getX()+mx;
-                checkTarget[1] = subject.getY()+my;
-                isCollision = rayCast(game, subject, checkTarget);
-                if (!isCollision) seekTarget = checkTarget;
-            } else {
-                seekTarget = checkTarget;
-            }
-        } else {
-            seekTarget = checkTarget;
-        }
+        // Use raycast to scan for walls... Return our target
+        double[] seekTarget = rayScan(subject, game, delta_t);
 
         // Get acceleration vector
         double[] accelerationVector = seekWithWallAvoidance(subject, seekTarget);
@@ -81,68 +51,61 @@ public class WallAvoidanceSeekController extends Controller {
     private double[] seekWithWallAvoidance(Car subject, double[] target) {
         double[] distance = VectorMath.distance(subject, target);
         double[] normalizedDistance = VectorMath.normalize(distance);
-        return VectorMath.multiply(normalizedDistance, 250); // FIXME max acceleration? hardcoded is fine for now
+        return VectorMath.multiply(normalizedDistance, subject.getMaxVelocity()); // FIXME max acceleration? hardcoded is fine for now
     }
 
-    private boolean rayCast(Game game, Car subject, double[] target) {
-        // Create our ray
-        RotatedRectangle ray = new RotatedRectangle(subject.getCollisionBox());
+    /**
+     * Raycast forward (along the path of velocity), left, and right
+     */
+    private double[] rayScan(Car subject, Game game, double delta_t) {
+        // Number of iterations forward for cars current velocity
+        double searchDistance = 30;
 
-        // Calculate unit of movement based on line
-        double y_ = target[1] - subject.getY();
-        double x_ = target[0] - subject.getX();
-        double xUnit;
-        double yUnit;
-        if (Math.abs(x_) > Math.abs(y_)) {
-            yUnit = y_ == 0 ? 0 : y_ / (x_/Math.signum(x_));
-            xUnit = x_ == 0 ? 0 : Math.signum(x_);
-        } else {
-            yUnit = y_ == 0 ? 0 : Math.signum(y_);
-            xUnit = x_ == 0 ? 0 :  x_ / (y_/Math.signum(y_));
-        }
+        // seek target might not be the actual target if a wall is in the way... Init to target
+        double[] seekTarget = new double[]{ target.getX(), target.getY() };
+        RayCastResult targetResult = RayCast.rayCast(game, subject, seekTarget);
 
-//        System.out.println("X: " + target[0] + " XUNIT: " + xUnit);
-//        System.out.println("Y: " + target[1] + " YUNIT: " + yUnit);
+        // Project forward
+        double angle = subject.getAngle();
+        double mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double[] forwardCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
+        RayCastResult forwardResult = RayCast.rayCast(game, subject, forwardCheckTarget);
 
-        // move the ray forward and check for collision
-        double[] origin = new double[]{ subject.getX(), subject.getY() };
-        double[] rayPosition = new double[]{ ray.C.getX(), ray.C.getY() };
-        int i = 0;
-        do {
+        // Project 45 degrees (converted to radians) in a direction. lets just call it "left" (didnt actually check if that's correct)
+        angle = subject.getAngle() + RAD45;
+        mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
+        my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double[] leftCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
+        RayCastResult leftResult = RayCast.rayCast(game, subject, leftCheckTarget);
 
-            ray.C.add(xUnit, yUnit);
+        // Project 45 degrees in the other direction... lets just call it "right" (didnt actually check if that's correct)
+        angle = subject.getAngle() - RAD45;
+        mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
+        my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double[] rightCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
+        RayCastResult rightResult = RayCast.rayCast(game, subject, rightCheckTarget);
 
-            GameObject collision = game.collision(ray);
-            if (collision != null && !collision.equals(subject)) {
-//                System.out.println(collision.toString());
-//                System.out.println("INTERATION i " + i);
-                return true;
+        // Lets make up some rules...
+        //
+        // Clearly, if we can raycast directly to the target with no collisions, lets do that (default)
+        // Let's also go towards the target if we have  no collisions left/right
+        //
+        // If we hit something forward, lefts try and favor left/right
+        // Otherwise we'll stick with the default (directly at target)
+        if (targetResult.isCollision() && !targetResult.getCollidedWith().equals(target)) {
+
+            // forward left and right...
+            if (leftResult.isCollision() && rightResult.isCollision()) {
+                seekTarget = forwardResult.getRayLocation();
+            } else if (leftResult.isCollision()) {
+                seekTarget = rightResult.getRayLocation();
+            } else if (rightResult.isCollision()) {
+                seekTarget = leftResult.getRayLocation();
             }
-            i++;
-            subject.setDebugVector(new double[]{ xUnit*i, yUnit*i });
-
-            // Check if weve surpassed our destination
-            rayPosition[0] = ray.C.getX();
-            rayPosition[1] = ray.C.getY();
-
-//            System.out.println("X: o - " + origin[0] + "  t - " + target[0] + "  r - " + rayPosition[0]);
-//            System.out.println("Y: o - " + origin[1] + "  t - " + target[1] + "  r - " + rayPosition[1]);
-//            System.out.println("SPEED: " + subject.getSpeed());
-
-        } while (!surpassed(origin, target, rayPosition));
-
-        return false;
-    }
-
-    private boolean surpassed(double[] origin, double[] destination, double[] point) {
-        // check if we surpass on the x axis
-        if ((origin[0] <= destination[0] &&  destination[0] <= point[0]) ||
-                (origin[0] >= destination[0] && destination[0]  >= point[0])) {
-            return true;
         }
 
-        // check if we surpass on the y axis
-        return (origin[1] <= destination[1] && destination[1] <= point[1]) ||
-                (origin[1] >= destination[1] && destination[1] >= point[1]);
+        subject.setDebugVector(VectorMath.distance(subject, seekTarget));
+        return seekTarget;
     }
 }
