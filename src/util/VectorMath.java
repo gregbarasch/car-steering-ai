@@ -9,6 +9,12 @@ public class VectorMath {
         return new double[]{ x, y };
     }
 
+    public static double[] distance(GameObject from, double[] to) {
+        double x = to[0] - from.getX();
+        double y = to[1] - from.getY();
+        return new double[]{ x, y };
+    }
+
     private static double distance(double[] from, double[] to) {
         double sum = 0.0;
         for (int i = 0; i < from.length; i++) {

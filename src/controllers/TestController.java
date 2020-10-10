@@ -3,20 +3,25 @@ package controllers;
 import engine.Car;
 import engine.Game;
 import engine.GameObject;
+import engine.RotatedRectangle;
 import util.VectorMath;
 
-public class SeekController extends Controller {
+public class TestController extends Controller {
 
     private final GameObject target;
 
-    public SeekController(GameObject target) {
+    public TestController(GameObject target) {
         this.target = target;
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
+
+        // Raycast in direction of velocity for 3 time iterations
+        double mx = subject.getX() + Math.cos(subject.getAngle()) * subject.getSpeed() * delta_t * 3;
+        double my = subject.getY() + Math.sin(subject.getAngle()) * subject.getSpeed() * delta_t * 3;
+
         // Get acceleration vector
-        double[] accelerationVector = seek(subject, target);
-        subject.setDebugVector(accelerationVector);
+        double[] accelerationVector = seekWithWallAvoidance(subject, target);
 
         // Calculate the direction projection
         double[] forwardVector = { Math.cos(subject.getAngle()), Math.sin(subject.getAngle()) };
@@ -42,9 +47,10 @@ public class SeekController extends Controller {
         }
     }
 
-    private double[] seek(Car subject, GameObject target) {
+    private double[] seekWithWallAvoidance(Car subject, GameObject target) {
         double[] distance = VectorMath.distance(subject, target);
+        subject.setDebugVector(distance);
         double[] normalizedDistance = VectorMath.normalize(distance);
-        return VectorMath.multiply(normalizedDistance, subject.getMaxVelocity());
+        return VectorMath.multiply(normalizedDistance, 250); // FIXME max acceleration? hardcoded is fine for now
     }
 }

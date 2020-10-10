@@ -2,6 +2,7 @@ package engine;
 
 import controllers.Controller;
 import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
@@ -21,6 +22,9 @@ public class Car extends GameObject {
     double m_min_velocity = -100;
     RotatedRectangle m_collision_box;
 
+    // Auto draws a line from
+    private double[] debugVector;
+
     public Car(String graphicsFileName, double x, double y, double alpha, Controller c) throws Exception {
         m_img = ImageIO.read(new File(graphicsFileName));
         m_x = x;
@@ -38,6 +42,10 @@ public class Car extends GameObject {
         return m_speed;
     }
 
+    public double getMaxVelocity() { return m_max_velocity; }
+
+    public double getMinVelocity() { return m_min_velocity; }
+
     public void update(Game game, double delta_t) {
         double[] controlVariables = {0,0,0};
         m_controller.update(this, game, delta_t, controlVariables);
@@ -47,16 +55,22 @@ public class Car extends GameObject {
         double old_y = m_y;
         double old_angle = m_alpha;
 
-        // update velocity, position and angle:
+        // Set acceleration
         double brake_strength = (m_speed>0 ? 250:100);
         double acceleration = controlVariables[Controller.VARIABLE_THROTTLE]*100 -
                               controlVariables[Controller.VARIABLE_BRAKE]*brake_strength;
+
+        // Set speed
         m_speed*=0.99;   // drag
         m_speed += acceleration * delta_t;
         if (m_speed>m_max_velocity) m_speed = m_max_velocity;
         if (m_speed<m_min_velocity) m_speed = m_min_velocity;
+
+        // Set x/y
         m_x += Math.cos(m_alpha)*m_speed * delta_t;
         m_y += Math.sin(m_alpha)*m_speed * delta_t;
+
+        // Set new angle
         double turning_rate = controlVariables[Controller.VARIABLE_STEERING]*m_speed;
         m_alpha+=turning_rate*delta_t/50;
 
@@ -78,17 +92,25 @@ public class Car extends GameObject {
         }
     }
 
+    public void setDebugVector(double[] debugVector) {
+        this.debugVector = debugVector;
+    }
+
     public void draw(Graphics2D g) {
         Graphics2D gg = (Graphics2D) g.create();
         gg.translate(m_x, m_y);
         gg.rotate(m_alpha);
         gg.translate(-m_img.getWidth()/2,-m_img.getHeight()/2);
         gg.drawImage(m_img, 0, 0, null);
+
+        if (debugVector != null) {
+            g.draw(new Line2D.Double(m_x, m_y, m_x+debugVector[0], m_y+debugVector[1]));
+        }
+
         gg.dispose();
     }
 
     public RotatedRectangle getCollisionBox() {
         return m_collision_box;
     }
-
 }

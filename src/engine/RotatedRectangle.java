@@ -8,30 +8,53 @@ package engine;
 public class RotatedRectangle {
     public static class _Vector2D {
         double x,y;
-        
-        void add(_Vector2D v) {
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void add(_Vector2D v) {
             x+=v.x;
             y+=v.y;
         }
 
-        void sub(_Vector2D v) {
+        public void add(double addx, double addy) {
+            x+=addx;
+            y+=addy;
+        }
+
+        public void sub(_Vector2D v) {
             x-=v.x;
             y-=v.y;
         }
-        
-        void rotate(double ang) {
+
+        public void rotate(double ang) {
             double t;
             double cosa = Math.cos(ang);
             double sina = Math.sin(ang);
-            t = x; 
-            x = t*cosa + y*sina; 
+            t = x;
+            x = t*cosa + y*sina;
             y = -t*sina + y*cosa;
         }
     }
-    
+
     public _Vector2D C,S;
     public double ang;
-    
+
+    public RotatedRectangle(RotatedRectangle other) {
+        C = new _Vector2D();
+        S = new _Vector2D();
+        C.x = other.C.x;
+        C.y = other.C.y;
+        S.x = other.S.x;
+        S.y = other.S.y;
+        ang = other.ang;
+    }
+
     public RotatedRectangle(double x, double y, double width, double height, double angle) {
         C = new _Vector2D();
         S = new _Vector2D();
@@ -44,10 +67,10 @@ public class RotatedRectangle {
 
     public static boolean RotRectsCollision(double x1, double y1, double width1, double height1, double angle1,
                                             double x2, double y2, double width2, double height2, double angle2) {
-        return RotRectsCollision(new RotatedRectangle(x1,y1,width1,height1,angle1), 
+        return RotRectsCollision(new RotatedRectangle(x1,y1,width1,height1,angle1),
                                  new RotatedRectangle(x2,y2,width2,height2,angle2));
     }
-    
+
     // Rotated Rectangles Collision Detection, Oren Becker, 2001
     public static boolean RotRectsCollision(RotatedRectangle rr1, RotatedRectangle rr2)
     {
@@ -136,5 +159,5 @@ public class RotatedRectangle {
      // (for the horizontal range of rr2)
      return !((ext1 < BL.y && ext2 < BL.y) ||
           (ext1 > TR.y && ext2 > TR.y));
-    }    
+    }
 }

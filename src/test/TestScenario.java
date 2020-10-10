@@ -7,13 +7,13 @@ import engine.Game;
 import engine.GameWindow;
 import engine.Obstacle;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  *
  * @author santi
  */
-public class WallAvoidanceSeekScenario {
+public class TestScenario {
     /*
         Goal of this exercise:
         - Write a controller for "car2" that uses the "Seek" steerig behavior to always run
