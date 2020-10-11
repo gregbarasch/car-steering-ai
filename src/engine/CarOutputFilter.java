@@ -2,13 +2,17 @@ package engine;
 
 import util.VectorMath;
 
+import java.util.Arrays;
+
 public class CarOutputFilter {
 
     private double throttle = 0;
     private double brake = 0;
     private double steering = 0;
 
-    public CarOutputFilter(Car subject, double[] accelerationVector) {
+    public CarOutputFilter(Car subject, double[] accelerationVector, double delta_t) {
+
+        double maxAcceleration = subject.getMaxVelocity() / delta_t;
 
         // Calculate the direction projection
         double[] forwardVector = { Math.cos(subject.getAngle()), Math.sin(subject.getAngle()) };
@@ -16,20 +20,18 @@ public class CarOutputFilter {
 
         // Use direction projection to set our linear acceleration
         if (directionProjection > 0) {
-            this.throttle = 1;
+            this.throttle = Math.abs(directionProjection / maxAcceleration);
         } else if (directionProjection < 0) {
-            this.brake = 1;
+            this.brake = Math.abs(directionProjection / maxAcceleration);
         }
 
         // project right vector over acceleration vector to compute steering projection..
         double[] rightVector = new double[]{ forwardVector[1], forwardVector[0] * -1 };
         double steerProjection = VectorMath.dotProduct(accelerationVector, rightVector);
 
-        // Steering
-        if (steerProjection > 0) {
-            this.steering = -1;
-        } else if (steerProjection < 0) {
-            this.steering = 1;
+        // Steering. Max acceleration is used as the unit for this as well.
+        if (steerProjection != 0) {
+            this.steering = steerProjection / maxAcceleration * -1;
         }
     }
 

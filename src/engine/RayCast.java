@@ -5,15 +5,16 @@ package engine;
  */
 public class RayCast {
 
-    public static RayCastResult rayCast(Game game, Car subject, double[] target) {
+    public static RayCastResult rayCast(Game game, GameObject subject, double[] target) {
 
         // Create our ray
         RotatedRectangle ray = new RotatedRectangle(subject.getCollisionBox());
 
         // Calculate unit of movement based on line
         // Max movement of 1/-1 unit (pixel?) on either axis.. scale second axis down
-        double dy = target[1] - subject.getY();
+        // TODO would be more efficient if I changed this to move 1 full car unit at a time along the line
         double dx = target[0] - subject.getX();
+        double dy = target[1] - subject.getY();
         double xUnit;
         double yUnit;
         if (Math.abs(dx) > Math.abs(dy)) {

@@ -18,10 +18,10 @@ public class Car extends GameObject {
     BufferedImage m_img;
 
     // physics:
-    double m_alpha;     // rotation
-    double m_speed;
-    double m_max_velocity = 250;
-    double m_min_velocity = -100;
+    private double m_alpha;     // rotation
+    private double m_speed;
+    private double m_max_velocity = 250;
+    private double m_min_velocity = -100;
     RotatedRectangle m_collision_box;
 
     // Auto draws a line from subject to subject+distance for debugging purposes

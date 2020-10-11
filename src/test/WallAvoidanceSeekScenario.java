@@ -2,10 +2,7 @@ package test;
 
 import controllers.KeyboardController;
 import controllers.WallAvoidanceSeekController;
-import engine.Car;
-import engine.Game;
-import engine.GameWindow;
-import engine.Obstacle;
+import engine.*;
 
 import java.awt.Color;
 
@@ -35,8 +32,8 @@ public class WallAvoidanceSeekScenario {
         game.add(new Obstacle(657,475,25,25,Color.GRAY));
         game.add(new Obstacle(375,150,50,300,Color.GRAY));
         // set up the cars and markers:
-        Car car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new KeyboardController());
-        Car car2 = new Car("graphics/bluecar.png",600,300,-Math.PI/2, new WallAvoidanceSeekController(car1));
+        GameObject car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new KeyboardController());
+        GameObject car2 = new Car("graphics/bluecar.png",600,305,-Math.PI/2, new WallAvoidanceSeekController(car1));
         game.add(car1);
         game.add(car2);
         GameWindow.newWindow(game);
