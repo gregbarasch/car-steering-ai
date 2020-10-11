@@ -1,4 +1,4 @@
-package engine;
+package carsteering.engine;
 
 /**
  * @author Greg Barasch
@@ -25,9 +25,10 @@ public class RayCast {
             xUnit = dx == 0 ? 0 :  dx / (dy/Math.signum(dy));
         }
 
-        // move the ray forward and check for collision
-        double[] origin = new double[]{ subject.getX(), subject.getY() };
+        // Start at the origin
+        double[] origin = subject.getXY();
         do {
+            // Iterate forward 1 unit
             ray.C.add(xUnit, yUnit);
 
             // Check if we've collided with something other than ourself
@@ -36,7 +37,7 @@ public class RayCast {
                 return new RayCastResult(true, ray.C.getXY(), collision);
             }
 
-            // Check if weve surpassed our destination
+            // Check if we've surpassed our destination
         } while (!surpassed(origin, target, ray.C.getXY()));
 
         return new RayCastResult(false, ray.C.getXY(), null);

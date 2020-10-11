@@ -1,7 +1,7 @@
-package controllers;
+package carsteering.controllers;
 
-import engine.Car;
-import engine.Game;
+import carsteering.engine.Car;
+import carsteering.engine.Game;
 
 /**
  *

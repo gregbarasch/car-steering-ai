@@ -1,8 +1,12 @@
-package controllers;
+package carsteering.controllers;
 
-import engine.*;
-import engine.RayCast.RayCastResult;
-import util.VectorMath;
+import carsteering.engine.Car;
+import carsteering.engine.CarOutputFilter;
+import carsteering.engine.Game;
+import carsteering.engine.GameObject;
+import carsteering.engine.RayCast;
+import carsteering.engine.RayCast.RayCastResult;
+import carsteering.util.VectorMath;
 
 public class WallAvoidanceSeekController extends Controller {
 
@@ -14,7 +18,6 @@ public class WallAvoidanceSeekController extends Controller {
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
-
         // Use raycast to scan for walls... Return our target
         double[] seekTarget = rayScan(subject, game, delta_t);
 
@@ -43,33 +46,19 @@ public class WallAvoidanceSeekController extends Controller {
         double searchDistance = 35;
 
         // seek target might not be the actual target if a wall is in the way... Init to target
-        double[] seekTarget = new double[]{ target.getX(), target.getY() };
+        double[] seekTarget = target.getXY();
         RayCastResult targetResult = RayCast.rayCast(game, subject, seekTarget);
 
-        // Project forward
-        double angle = subject.getAngle();
-        double mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
-        double my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
-        double[] forwardCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
-        RayCastResult forwardResult = RayCast.rayCast(game, subject, forwardCheckTarget);
-
-        // Project 45 degrees (converted to radians) in a direction. lets just call it "left" // TODO validate if left
-        angle = subject.getAngle() + RAD45;
-        mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
-        my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
-        double[] leftCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
-        RayCastResult leftResult = RayCast.rayCast(game, subject, leftCheckTarget);
-
-        // Project 45 degrees in the other direction... lets just call it "right" // TODO validate if right
-        angle = subject.getAngle() - RAD45;
-        mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
-        my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
-        double[] rightCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
-        RayCastResult rightResult = RayCast.rayCast(game, subject, rightCheckTarget);
+        // Project forward, left and right
+        // Project 45 degrees in either direction (left and right)
+        // TODO validate if left/right are semantically correct
+        RayCastResult forwardResult = rayCast(game, subject, subject.getAngle(), searchDistance, delta_t);
+        RayCastResult leftResult = rayCast(game, subject, subject.getAngle()+RAD45, searchDistance, delta_t);
+        RayCastResult rightResult = rayCast(game, subject, subject.getAngle()-RAD45, searchDistance, delta_t);
 
         // Lets make some rules...
         //
-        // Clearly, if we can raycast directly to the target with no collisions, lets do that (default)
+        // If we can raycast directly to the target with no collisions, lets do that (default)
         // Let's also go towards the target if we have  no collisions left/right
         //
         // If we hit something forward, lefts try and favor left/right
@@ -88,5 +77,12 @@ public class WallAvoidanceSeekController extends Controller {
 
         subject.setDebugDistanceVector(VectorMath.distance(subject, seekTarget));
         return seekTarget;
+    }
+
+    private RayCastResult rayCast(Game game, Car subject, double angle, double searchDistance, double delta_t) {
+        double mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
+        double[] checkTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
+        return RayCast.rayCast(game, subject, checkTarget);
     }
 }

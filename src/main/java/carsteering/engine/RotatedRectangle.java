@@ -1,4 +1,4 @@
-package engine;
+package carsteering.engine;
 
 /**
  *
@@ -6,6 +6,7 @@ package engine;
  * http://www.ragestorm.net/tutorial?id=22
  */
 public class RotatedRectangle {
+
     public static class _Vector2D {
         double x,y;
 

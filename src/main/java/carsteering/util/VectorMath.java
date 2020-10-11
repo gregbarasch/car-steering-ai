@@ -1,6 +1,6 @@
-package util;
+package carsteering.util;
 
-import engine.GameObject;
+import carsteering.engine.GameObject;
 
 /**
  * @author Greg Barasch

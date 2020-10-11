@@ -1,7 +1,6 @@
-package engine;
+package carsteering.engine;
 
-import controllers.Controller;
-import util.VectorMath;
+import carsteering.controllers.Controller;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;

@@ -1,10 +1,10 @@
-package test;
+package carsteering.test;
 
-import controllers.KeyboardController;
-import engine.Car;
-import engine.Game;
-import engine.GameWindow;
-import engine.Obstacle;
+import carsteering.controllers.KeyboardController;
+import carsteering.engine.Car;
+import carsteering.engine.Game;
+import carsteering.engine.GameWindow;
+import carsteering.engine.Obstacle;
 import java.awt.Color;
 
 /**

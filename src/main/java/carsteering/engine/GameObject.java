@@ -1,4 +1,4 @@
-package engine;
+package carsteering.engine;
 
 import java.awt.Graphics2D;
 
@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
  */
 public abstract class GameObject {
     double m_x,m_y;
-    
+
     /*
     The only thing we require of game objects is that they define the following three functions:
     - update: that contains their bhavior
@@ -19,13 +19,17 @@ public abstract class GameObject {
     public abstract void draw(Graphics2D g);
     public abstract RotatedRectangle getCollisionBox();
 
-    
+
     public double getX() {
         return m_x;
     }
-    
+
     public double getY() {
         return m_y;
+    }
+
+    public double[] getXY() {
+        return new double[]{ m_x, m_y };
     }
 
     public boolean collision(GameObject o) {

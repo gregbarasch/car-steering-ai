@@ -1,13 +1,12 @@
-package test;
+package carsteering.test;
 
-import controllers.ArriveController;
-import controllers.EmptyController;
-import engine.Car;
-import engine.Game;
-import engine.GameObject;
-import engine.GameWindow;
-import engine.Marker;
-import engine.Obstacle;
+import carsteering.controllers.ArriveController;
+import carsteering.engine.Car;
+import carsteering.engine.Game;
+import carsteering.engine.GameObject;
+import carsteering.engine.GameWindow;
+import carsteering.engine.Marker;
+import carsteering.engine.Obstacle;
 import java.awt.Color;
 
 /**
@@ -19,7 +18,7 @@ public class ArriveScenario {
         Goal of this exercise:
         - Write a controller for "car1" that uses the "Arrive" steering behavior to arrive to
           a given marker.
-        - To make sure it works, test your controller by placing the marker in different positions
+        - To make sure it works, carsteering.test your controller by placing the marker in different positions
           in the map.
     */
 

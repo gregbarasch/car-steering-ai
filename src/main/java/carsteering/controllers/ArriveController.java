@@ -1,10 +1,10 @@
-package controllers;
+package carsteering.controllers;
 
-import engine.Car;
-import engine.CarOutputFilter;
-import engine.Game;
-import engine.GameObject;
-import util.VectorMath;
+import carsteering.engine.Car;
+import carsteering.engine.CarOutputFilter;
+import carsteering.engine.Game;
+import carsteering.engine.GameObject;
+import carsteering.util.VectorMath;
 
 /**
  * @author Greg Barasch
@@ -18,6 +18,7 @@ public class ArriveController extends Controller {
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
+
         // Get acceleration vector
         double[] accelerationVector = arrive(subject, target, 210, 4, delta_t);
         subject.setDebugDistanceVector(accelerationVector);
@@ -30,13 +31,11 @@ public class ArriveController extends Controller {
 
     private double[] arrive(Car subject, GameObject target, double slowRadius, double targetRadius, double delta_t) {
 
-        double maxAcceleration = subject.getMaxVelocity()/delta_t;
-
         // Get our distance magnitude..
         double[] distance = VectorMath.distance(subject, target);
         double distanceMagnitude = VectorMath.magnitude(distance);
 
-        // Are we close eno ugh?
+        // Are we close enough?
         if (distanceMagnitude <= targetRadius) {
             return new double[] { 0, 0 };
         }
@@ -59,6 +58,7 @@ public class ArriveController extends Controller {
         double[] accelerationVector = VectorMath.divide(VectorMath.subtract(targetVelocity, velocityVector), delta_t);
 
         // Check if we exceeded our max acceleration
+        double maxAcceleration = subject.getMaxVelocity()/delta_t;
         if (VectorMath.magnitude(accelerationVector) > maxAcceleration) {
             accelerationVector = VectorMath.multiply(VectorMath.normalize(accelerationVector), maxAcceleration);
         }

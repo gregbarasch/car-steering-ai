@@ -1,10 +1,10 @@
-package controllers;
+package carsteering.controllers;
 
-import engine.Car;
-import engine.CarOutputFilter;
-import engine.Game;
-import engine.GameObject;
-import util.VectorMath;
+import carsteering.engine.Car;
+import carsteering.engine.CarOutputFilter;
+import carsteering.engine.Game;
+import carsteering.engine.GameObject;
+import carsteering.util.VectorMath;
 
 /**
  * @author Greg Barasch

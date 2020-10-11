@@ -1,8 +1,6 @@
-package engine;
+package carsteering.engine;
 
-import util.VectorMath;
-
-import java.util.Arrays;
+import carsteering.util.VectorMath;
 
 public class CarOutputFilter {
 

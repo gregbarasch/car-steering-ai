@@ -1,7 +1,7 @@
-package controllers;
+package carsteering.controllers;
 
-import engine.Car;
-import engine.Game;
+import carsteering.engine.Car;
+import carsteering.engine.Game;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 
@@ -10,11 +10,11 @@ import java.awt.event.KeyEvent;
  * @author santi
  */
 public class KeyboardController extends Controller {
+
     public static final int key_accelerate = KeyEvent.VK_UP;
     public static final int key_brake = KeyEvent.VK_DOWN;
     public static final int key_left = KeyEvent.VK_LEFT;
     public static final int key_right = KeyEvent.VK_RIGHT;
-
 
     // store which keys are currently pressed:
     boolean[] keyboardState = new boolean[KeyEvent.KEY_LAST];

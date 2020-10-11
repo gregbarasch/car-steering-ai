@@ -1,4 +1,4 @@
-package engine;
+package carsteering.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,12 +14,12 @@ import javax.swing.JFrame;
  */
 public class GameWindow extends JComponent {
     Game m_game;
-    
-    private GameWindow(Game game) {        
+
+    private GameWindow(Game game) {
         m_game = game;
         setPreferredSize(new Dimension((int)m_game.getWidth(),(int)m_game.getHeight()));
     }
-    
+
 
     public static void newWindow(Game game) {
         /*
@@ -60,12 +60,12 @@ public class GameWindow extends JComponent {
             }
         }
     }
-    
-    
+
+
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0,0, getWidth(), getHeight());
         m_game.draw(g2d);
-    }    
+    }
 }
