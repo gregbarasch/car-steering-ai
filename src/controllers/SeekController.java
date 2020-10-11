@@ -1,10 +1,14 @@
 package controllers;
 
 import engine.Car;
+import engine.CarOutputFilter;
 import engine.Game;
 import engine.GameObject;
 import util.VectorMath;
 
+/**
+ * @author Greg Barasch
+ */
 public class SeekController extends Controller {
 
     private final GameObject target;
@@ -14,32 +18,16 @@ public class SeekController extends Controller {
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
+
         // Get acceleration vector
         double[] accelerationVector = seek(subject, target);
-        subject.setDebugVector(accelerationVector);
+        subject.setDebugDistanceVector(accelerationVector);
 
-        // Calculate the direction projection
-        double[] forwardVector = { Math.cos(subject.getAngle()), Math.sin(subject.getAngle()) };
-        double directionProjection = VectorMath.dotProduct(accelerationVector, forwardVector);
-
-        // Use direction projection to set our linear acceleration
-        if (directionProjection > 0) {
-            controlVariables[VARIABLE_THROTTLE] = 1;
-        } else {
-            controlVariables[VARIABLE_THROTTLE] = -1;
-        }
-        controlVariables[VARIABLE_BRAKE] = 0;
-
-        // project right vector over acceleration vector to compute steering projection..
-        double[] rightVector = new double[]{ forwardVector[1], forwardVector[0]*-1 };
-        double steerProjection = VectorMath.dotProduct(accelerationVector, rightVector);
-
-        // Steering
-        if (steerProjection > 0) {
-            controlVariables[VARIABLE_STEERING] = -1;
-        } else {
-            controlVariables[VARIABLE_STEERING] = 1;
-        }
+        // Filter our acceleration and set our control variables
+        CarOutputFilter carOutputFilter = new CarOutputFilter(subject, accelerationVector);
+        controlVariables[VARIABLE_STEERING] = carOutputFilter.getSteering();
+        controlVariables[VARIABLE_THROTTLE] = carOutputFilter.getThrottle();
+        controlVariables[VARIABLE_BRAKE] = carOutputFilter.getBrake();
     }
 
     private double[] seek(Car subject, GameObject target) {

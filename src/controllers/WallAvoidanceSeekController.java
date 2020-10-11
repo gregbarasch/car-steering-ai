@@ -1,9 +1,6 @@
 package controllers;
 
-import engine.Car;
-import engine.Game;
-import engine.GameObject;
-import engine.RayCast;
+import engine.*;
 import engine.RayCast.RayCastResult;
 import util.VectorMath;
 
@@ -24,28 +21,11 @@ public class WallAvoidanceSeekController extends Controller {
         // Get acceleration vector
         double[] accelerationVector = seekWithWallAvoidance(subject, seekTarget);
 
-        // Calculate the direction projection
-        double[] forwardVector = { Math.cos(subject.getAngle()), Math.sin(subject.getAngle()) };
-        double directionProjection = VectorMath.dotProduct(accelerationVector, forwardVector);
-
-        // Use direction projection to set our linear acceleration
-        if (directionProjection > 0) {
-            controlVariables[VARIABLE_THROTTLE] = 1;
-        } else {
-            controlVariables[VARIABLE_THROTTLE] = -1;
-        }
-        controlVariables[VARIABLE_BRAKE] = 0;
-
-        // project right vector over acceleration vector to compute steering projection..
-        double[] rightVector = new double[]{ forwardVector[1], forwardVector[0]*-1 };
-        double steerProjection = VectorMath.dotProduct(accelerationVector, rightVector);
-
-        // Steering
-        if (steerProjection > 0) {
-            controlVariables[VARIABLE_STEERING] = -1;
-        } else {
-            controlVariables[VARIABLE_STEERING] = 1;
-        }
+        // Filter our acceleration and set our control variables
+        CarOutputFilter carOutputFilter = new CarOutputFilter(subject, accelerationVector);
+        controlVariables[VARIABLE_STEERING] = carOutputFilter.getSteering();
+        controlVariables[VARIABLE_THROTTLE] = carOutputFilter.getThrottle();
+        controlVariables[VARIABLE_BRAKE] = carOutputFilter.getBrake();
     }
 
     private double[] seekWithWallAvoidance(Car subject, double[] target) {
@@ -86,7 +66,7 @@ public class WallAvoidanceSeekController extends Controller {
         double[] rightCheckTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
         RayCastResult rightResult = RayCast.rayCast(game, subject, rightCheckTarget);
 
-        // Lets make up some rules...
+        // Lets make some rules...
         //
         // Clearly, if we can raycast directly to the target with no collisions, lets do that (default)
         // Let's also go towards the target if we have  no collisions left/right
@@ -105,7 +85,7 @@ public class WallAvoidanceSeekController extends Controller {
             }
         }
 
-        subject.setDebugVector(VectorMath.distance(subject, seekTarget));
+        subject.setDebugDistanceVector(VectorMath.distance(subject, seekTarget));
         return seekTarget;
     }
 }

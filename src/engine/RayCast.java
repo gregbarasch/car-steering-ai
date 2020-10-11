@@ -1,56 +1,44 @@
 package engine;
 
+/**
+ * @author Greg Barasch
+ */
 public class RayCast {
 
     public static RayCastResult rayCast(Game game, Car subject, double[] target) {
+
         // Create our ray
         RotatedRectangle ray = new RotatedRectangle(subject.getCollisionBox());
 
         // Calculate unit of movement based on line
         // Max movement of 1/-1 unit (pixel?) on either axis.. scale second axis down
-        double y_ = target[1] - subject.getY();
-        double x_ = target[0] - subject.getX();
+        double dy = target[1] - subject.getY();
+        double dx = target[0] - subject.getX();
         double xUnit;
         double yUnit;
-        if (Math.abs(x_) > Math.abs(y_)) {
-            yUnit = y_ == 0 ? 0 : y_ / (x_/Math.signum(x_));
-            xUnit = x_ == 0 ? 0 : Math.signum(x_);
+        if (Math.abs(dx) > Math.abs(dy)) {
+            yUnit = dy == 0 ? 0 : dy / (dx/Math.signum(dx));
+            xUnit = dx == 0 ? 0 : Math.signum(dx);
         } else {
-            yUnit = y_ == 0 ? 0 : Math.signum(y_);
-            xUnit = x_ == 0 ? 0 :  x_ / (y_/Math.signum(y_));
+            yUnit = dy == 0 ? 0 : Math.signum(dy);
+            xUnit = dx == 0 ? 0 :  dx / (dy/Math.signum(dy));
         }
-
-//        System.out.println("X: " + target[0] + " XUNIT: " + xUnit);
-//        System.out.println("Y: " + target[1] + " YUNIT: " + yUnit);
 
         // move the ray forward and check for collision
         double[] origin = new double[]{ subject.getX(), subject.getY() };
-        double[] rayPosition = new double[]{ ray.C.getX(), ray.C.getY() };
-        int i = 0;
         do {
             ray.C.add(xUnit, yUnit);
 
+            // Check if we've collided with something other than ourself
             GameObject collision = game.collision(ray);
             if (collision != null && !collision.equals(subject)) {
-//                System.out.println(collision.toString());
-//                System.out.println("INTERATION i " + i);
-                rayPosition[0] = ray.C.getX();
-                rayPosition[1] = ray.C.getY();
-                return new RayCastResult(true, rayPosition, collision);
+                return new RayCastResult(true, ray.C.getXY(), collision);
             }
-            i++;
 
             // Check if weve surpassed our destination
-            rayPosition[0] = ray.C.getX();
-            rayPosition[1] = ray.C.getY();
+        } while (!surpassed(origin, target, ray.C.getXY()));
 
-//            System.out.println("X: o - " + origin[0] + "  t - " + target[0] + "  r - " + rayPosition[0]);
-//            System.out.println("Y: o - " + origin[1] + "  t - " + target[1] + "  r - " + rayPosition[1]);
-//            System.out.println("SPEED: " + subject.getSpeed());
-
-        } while (!surpassed(origin, target, rayPosition));
-
-        return new RayCastResult(false, rayPosition, null);
+        return new RayCastResult(false, ray.C.getXY(), null);
     }
 
     /**

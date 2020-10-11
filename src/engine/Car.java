@@ -1,6 +1,8 @@
 package engine;
 
 import controllers.Controller;
+import util.VectorMath;
+
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
@@ -22,8 +24,8 @@ public class Car extends GameObject {
     double m_min_velocity = -100;
     RotatedRectangle m_collision_box;
 
-    // Auto draws a line from
-    private double[] debugVector;
+    // Auto draws a line from subject to subject+distance for debugging purposes
+    private double[] debugDistanceVector;
 
     public Car(String graphicsFileName, double x, double y, double alpha, Controller c) throws Exception {
         m_img = ImageIO.read(new File(graphicsFileName));
@@ -92,8 +94,12 @@ public class Car extends GameObject {
         }
     }
 
-    public void setDebugVector(double[] debugVector) {
-        this.debugVector = debugVector;
+    public void setDebugDistanceVector(double[] vector) {
+        this.debugDistanceVector = vector;
+    }
+
+    public void unsetDebugDistanceVector() {
+        this.debugDistanceVector = null;
     }
 
     public void draw(Graphics2D g) {
@@ -103,8 +109,9 @@ public class Car extends GameObject {
         gg.translate(-m_img.getWidth()/2,-m_img.getHeight()/2);
         gg.drawImage(m_img, 0, 0, null);
 
-        if (debugVector != null) {
-            g.draw(new Line2D.Double(m_x, m_y, m_x+debugVector[0], m_y+debugVector[1]));
+        // draw line from self to self+distance
+        if (debugDistanceVector != null) {
+            g.draw(new Line2D.Double(m_x, m_y, m_x+debugDistanceVector[0], m_y+debugDistanceVector[1]));
         }
 
         gg.dispose();

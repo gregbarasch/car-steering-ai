@@ -2,7 +2,11 @@ package util;
 
 import engine.GameObject;
 
+/**
+ * @author Greg Barasch
+ */
 public class VectorMath {
+
     public static double[] distance(GameObject from, GameObject to) {
         double x = to.getX() - from.getX();
         double y = to.getY() - from.getY();
@@ -12,6 +16,12 @@ public class VectorMath {
     public static double[] distance(GameObject from, double[] to) {
         double x = to[0] - from.getX();
         double y = to[1] - from.getY();
+        return new double[]{ x, y };
+    }
+
+    public static double[] distance(double[] from, double[] to) {
+        double x = to[0] - from[0];
+        double y = to[1] - from[1];
         return new double[]{ x, y };
     }
 

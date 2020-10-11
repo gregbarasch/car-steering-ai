@@ -17,6 +17,10 @@ public class RotatedRectangle {
             return y;
         }
 
+        public double[] getXY() {
+            return new double[]{ x, y };
+        }
+
         public void add(_Vector2D v) {
             x+=v.x;
             y+=v.y;
