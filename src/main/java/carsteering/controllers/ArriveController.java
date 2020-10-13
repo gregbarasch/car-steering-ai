@@ -18,7 +18,6 @@ public class ArriveController extends Controller {
     }
 
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
-
         // Get acceleration vector
         double[] accelerationVector = arrive(subject, target, 210, 4, delta_t);
         subject.setDebugDistanceVector(accelerationVector);
@@ -50,12 +49,12 @@ public class ArriveController extends Controller {
         double[] normalizedDistance = VectorMath.divide(distance, distanceMagnitude);
         double[] targetVelocity = VectorMath.multiply(normalizedDistance, targetSpeed);
 
-        // Compute the acceleration vector
+        // Compute the acceleration vector.. Since the distance is small, ive scaled the time needed to achieve the desired velocity
         double[] velocityVector = new double[]{
                 Math.cos(subject.getAngle()) * subject.getSpeed(),
                 Math.sin(subject.getAngle()) * subject.getSpeed()
         };
-        double[] accelerationVector = VectorMath.divide(VectorMath.subtract(targetVelocity, velocityVector), delta_t);
+        double[] accelerationVector = VectorMath.divide(VectorMath.subtract(targetVelocity, velocityVector), delta_t/2);
 
         // Check if we exceeded our max acceleration
         double maxAcceleration = subject.getMaxVelocity()/delta_t;

@@ -8,6 +8,8 @@ import carsteering.engine.RayCast;
 import carsteering.engine.RayCast.RayCastResult;
 import carsteering.util.VectorMath;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class WallAvoidanceSeekController extends Controller {
 
     private static final double RAD45 = Math.PI/4;
@@ -38,12 +40,13 @@ public class WallAvoidanceSeekController extends Controller {
     }
 
     /**
-     * Raycast forward (along the path of velocity), left, and right
+     * Raycast forward (along the path of velocity), left, and right, as well as directly at the target
+     * @return x/y coordinates of destination
      */
     private double[] rayScan(Car subject, Game game, double delta_t) {
 
         // Number of iterations forward for cars current velocity
-        double searchDistance = 35;
+        double searchDistance = 30;
 
         // seek target might not be the actual target if a wall is in the way... Init to target
         double[] seekTarget = target.getXY();
@@ -52,26 +55,36 @@ public class WallAvoidanceSeekController extends Controller {
         // Project forward, left and right
         // Project 45 degrees in either direction (left and right)
         // TODO validate if left/right are semantically correct
-        RayCastResult forwardResult = rayCast(game, subject, subject.getAngle(), searchDistance, delta_t);
+        RayCastResult forwardResult = rayCast(game, subject, subject.getAngle(), searchDistance/1.5, delta_t);
         RayCastResult leftResult = rayCast(game, subject, subject.getAngle()+RAD45, searchDistance, delta_t);
         RayCastResult rightResult = rayCast(game, subject, subject.getAngle()-RAD45, searchDistance, delta_t);
 
         // Lets make some rules...
-        //
-        // If we can raycast directly to the target with no collisions, lets do that (default)
-        // Let's also go towards the target if we have  no collisions left/right
-        //
-        // If we hit something forward, lefts try and favor left/right
-        // Otherwise we'll stick with the default (directly at target)
-        if (targetResult.isCollision() && !targetResult.getCollidedWith().equals(target)) {
+        // If we are on a path to crash into something (that's not the target) withihn
+        if (forwardResult.isCollision() && !forwardResult.collidedWith().equals(target)) {
 
-            // forward left and right...
-            if (leftResult.isCollision() && rightResult.isCollision()) {
-                seekTarget = forwardResult.getRayLocation();
-            } else if (leftResult.isCollision()) {
+            // If forward/left/right are blocked then lets reverse
+            // If one of our directions are blocked, move the other direction
+            // Otherwise, move towards the target
+            if (leftResult.isCollision()) {
                 seekTarget = rightResult.getRayLocation();
             } else if (rightResult.isCollision()) {
                 seekTarget = leftResult.getRayLocation();
+            }
+
+        } else {
+
+            // Forward isn't blocked, so lets move forward/left/right if we can't see the target
+            if (targetResult.isCollision() && !targetResult.collidedWith().equals(target)) {
+
+                if (leftResult.isCollision() && rightResult.isCollision()) {
+                    seekTarget = forwardResult.getRayLocation();
+                } else if (leftResult.isCollision()) {
+                    seekTarget = rightResult.getRayLocation();
+                } else if (rightResult.isCollision()) {
+                    seekTarget = leftResult.getRayLocation();
+                }
+
             }
         }
 
@@ -79,9 +92,14 @@ public class WallAvoidanceSeekController extends Controller {
         return seekTarget;
     }
 
+    /**
+     * Raycast at specific angle given subjects current speed
+     */
     private RayCastResult rayCast(Game game, Car subject, double angle, double searchDistance, double delta_t) {
-        double mx = Math.cos(angle) * subject.getSpeed() * delta_t * searchDistance;
-        double my = Math.sin(angle) * subject.getSpeed() * delta_t * searchDistance;
+        // If our speed is 0, lets cast randomly forward or backwards
+        double speed = subject.getSpeed() == 0 ? ThreadLocalRandom.current().nextDouble(-1.0, 1.01) : subject.getSpeed();
+        double mx = Math.cos(angle) * speed * delta_t * searchDistance;
+        double my = Math.sin(angle) * speed *  delta_t * searchDistance;
         double[] checkTarget = new double[]{ subject.getX()+mx, subject.getY()+my };
         return RayCast.rayCast(game, subject, checkTarget);
     }

@@ -44,7 +44,7 @@ public class RayCast {
     }
 
     /**
-     * Check if point is beyond destination along line from origin to destination
+     * Check if point is touching or beyond the destination along a line from origin to destination
      */
     private static boolean surpassed(double[] origin, double[] destination, double[] point) {
         // check if we surpass on the x axis
@@ -82,7 +82,7 @@ public class RayCast {
             return rayLocation;
         }
 
-        public GameObject getCollidedWith() {
+        public GameObject collidedWith() {
             return collidedWith;
         }
     }
