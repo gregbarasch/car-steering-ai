@@ -7,7 +7,7 @@ This repository was created in order to demonstrate three common steering behavi
 3. Wall Avoidance Seek
 
 ### Code and Build
-The scenarios are contained within `./src/main/java/test/*` <br>
+The scenarios are contained within `./src/main/java/carsteering/test/*` <br>
 The project was built using `java 14` <br>
 
 There are currently no build / run scripts configured, so you will be responsible for setting up and building this project within your environment.
