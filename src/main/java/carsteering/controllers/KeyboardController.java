@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 /**
  *
  * @author santi
+ * @author Greg Barasch
  */
 public class KeyboardController extends Controller {
 

@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 /**
  *
  * @author santi
+ * @author Greg Barasch
  */
 public class Car extends GameObject {
     Controller m_controller;

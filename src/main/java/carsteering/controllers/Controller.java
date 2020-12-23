@@ -6,6 +6,7 @@ import carsteering.engine.Game;
 /**
  *
  * @author santi
+ * @author Greg Barasch
  */
 public abstract class Controller {
     /*

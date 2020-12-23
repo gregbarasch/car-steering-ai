@@ -10,6 +10,9 @@ import carsteering.util.VectorMath;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author Greg Barasch
+ */
 public class WallAvoidanceSeekController extends Controller {
 
     private static final double RAD45 = Math.PI/4;

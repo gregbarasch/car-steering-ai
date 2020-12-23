@@ -13,6 +13,7 @@ import java.awt.Color;
 /**
  *
  * @author santi
+ * @author Greg Barasch
  */
 public class WallAvoidanceSeekScenario {
     /*
@@ -37,7 +38,7 @@ public class WallAvoidanceSeekScenario {
         game.add(new Obstacle(375,150,50,300,Color.GRAY));
         // set up the cars and markers:
         GameObject car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new KeyboardController());
-        GameObject car2 = new Car("graphics/bluecar.png",600,305,-Math.PI/2, new WallAvoidanceSeekController(car1));
+        GameObject car2 = new Car("graphics/bluecar.png",600,295,-Math.PI/2, new WallAvoidanceSeekController(car1));
         game.add(car1);
         game.add(car2);
         GameWindow.newWindow(game);

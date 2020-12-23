@@ -12,6 +12,7 @@ import java.awt.Color;
 /**
  *
  * @author santi
+ * @author Greg Barasch
  */
 public class SeekScenario {
     /*

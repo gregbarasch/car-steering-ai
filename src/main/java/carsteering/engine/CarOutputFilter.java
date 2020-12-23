@@ -2,6 +2,9 @@ package carsteering.engine;
 
 import carsteering.util.VectorMath;
 
+/**
+ * @author Greg Barasch
+ */
 public class CarOutputFilter {
 
     private double throttle = 0;

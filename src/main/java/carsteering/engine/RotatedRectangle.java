@@ -2,7 +2,7 @@ package carsteering.engine;
 
 /**
  *
- * Adapted from the C++ version writteh by Oren Becker:
+ * Adapted from the C++ version written by Oren Becker:
  * http://www.ragestorm.net/tutorial?id=22
  */
 public class RotatedRectangle {
